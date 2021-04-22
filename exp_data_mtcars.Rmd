@@ -1,0 +1,306 @@
+---
+title: "exp_data_mtcars"
+author: "Mohammed ElBelbesy"
+date: "4/19/2021"
+output: html_document
+---
+#Setting working directory--
+#---------------------------
+
+```{r}
+getwd()
+setwd("C:/Users/admin/Documents/data_vis_ss21")
+```
+
+
+#Importing the data and store it in an object
+```{r}
+cars <- read.csv("mtcars.csv")
+head(cars) #investigate the first 6 observations 
+```
+
+#investigate the last 6 observations
+```{r}
+tail(cars)
+```
+
+#Investigate the structure of mtcars-
+#------------------------------------
+```{r}
+str(mtcars)
+```
+#so, here we can see 32 observations represents 32 car models, the total number of variables(coloumns) is 11 car features for example hp represents horse power...
+
+
+#the cyl, vs, gear, and carb are not necessarily continuous variables. These variables are categorical variables 
+
+#change the data types from numeric to factor 
+```{r} 
+#cars$cyl <- as.factor(cars$cyl)  
+#cars$vs <- as.factor(cars$vs)
+#cars$am <- as.factor(cars$am)
+#cars$carb <- as.factor(cars$carb)
+```
+I choosed to silent the commands not to affect the cars data but afterwords we can use as.factor function inside the command 
+
+#if we want to check the data types of the variables in this data frame
+```{r}
+class(cars$cyl)
+```
+
+#we can use sapply function to do so for all coloumns
+```{r}
+sapply(cars, class)
+```
+
+#check to see if there are any missing Values
+```{r}
+sum(is.na(cars)) #so no NA which means there no missing values
+```
+so, in this case we do not have to deal with any missing values.
+
+#------------------------------------------------------------------------------------
+
+
+#Summary statistics# 
+#----------------------
+
+#for numeric data we want to know for example the central tendency (mean, median and mode)
+#also, to know the variablity of our data like range, min, max (spread of the data)
+#so, we can use fivenum function or summary function 
+```{r}
+summary(cars$hp)
+```
+
+#we can check for mpg 
+```{r}
+summary(cars$mpg)
+```
+
+#for the categorical data it is common to use frequency tables 
+#for examlple we want to get the total count of observations that fall in each cylinder 
+```{r}
+table(cars$cyl)
+```
+
+```{r}
+cars$cyl
+```
+
+#------------------------------------------------------------------------------------
+
+
+#univariate qualitative analysis
+#analysis of a single categorical variable-
+#------------------------------------------
+
+##Frequency bar chart-
+what if we want to ask how many cars are with 4 cylinders ? 
+```{r}
+plot(
+  x = as.factor(cars$cyl), #converting data type to a categorical data and pass it x
+  main = "count of cars vs cylinders",
+  xlab = "cylinder", 
+  ylab = "count of cars",
+  col =  "sky blue"
+)
+```
+from the bar chart we can see that 11 cars use 4 cylinders.
+
+
+##for instance we can ask how many cars use 4 gear ?
+##which gears are used the least number ? 
+```{r}
+barplot(table(cars$gear),
+        main = "frequency of gears",
+        xlab = "gear ",
+        ylab ="number of cars ")
+```
+the height of each bar represents the frequency of observations of each category
+from the graph we can see that, the 3 gears are used the most and the 5 gears are used the least. 
+
+```{r}
+barplot(table(cars$am),
+        main = " Transmission Automatic (0) vs manual (1)",
+        xlab = "Transmission ",
+        ylab ="number of cars ",
+        col = "wheat")
+```
+
+
+##create a pie chart of v-shape engine(0) vs straight one(1)
+##since it is only two categories in vs so it is good to use pie chart to compare that
+
+```{r}
+pie(table(cars$vs), 
+    main = "proportion of V-shape(0) engine vs straight engine(1)")
+```
+
+##pie chart for gears 
+proportion or part of the whole 
+what is the proportion of cars that use 3 gears ? 
+
+```{r}
+pie(table(cars$gear))
+```
+
+#------------------------------------------------------------------------------------
+
+
+
+#quantitative univariate analysis--
+#analysis of a single numeric variable- 
+#measure of the location of the data(central tendency), spread of the data, shape.
+#----------------------------------------------------------------------------------
+
+##with boxplot we can see 5-number summary statistics for a single quantitative variables
+
+##create a box plot of weight of the cars
+
+```{r}
+boxplot(x = cars$wt,
+        horizontal = T,
+        main = "distribution of the weight of the cars", 
+        xlab = "weight ib/1000")
+```
+from the boxplot we can see that the data may be positively skewed 
+
+##create a histogram of weight of the cars
+```{r}
+hist(
+  x = cars$wt,
+  main = "distribution of the weight of the cars", 
+  xlab = "weight ib/1000",
+  breaks = 20 #change the number of bins
+)
+```
+
+#create a histogram of hp
+```{r}
+hist(cars$hp,
+     main=" horsepower distribution", #change the title
+     xlim = c(10,400),   #Change the range of the x from 1 to 20
+     ylab="Frequency of hp", #label y-axis
+     border = "blue", #gives a blue border 
+     las=1,         #rotate the labels y axis and x axis
+     breaks = 20,   #changing the bin width to 20
+     col = "green")
+```
+
+#create a density plot
+```{r}
+plot(
+  x = density(cars$hp),
+  main = "hp distribution",
+  
+)
+```
+it seems that the data is postively skewed
+
+#------------------------------------------------------------------------------------
+
+
+#Qualitative bivariate analysis--
+#two categorical variables--
+#----------------------------------------------
+
+##create a contingency table 
+```{r}
+engine <- table(cars$vs, cars$cyl)
+engine
+```
+we have number of cylinders on the coloumns and type of engine on the rows each cell in the contingency table represents the frequency of the observations for example we can see that cars with 8 cylinders use V-engine
+
+#create a grouped frequency bar chart 
+
+```{r}
+barplot(
+  height = engine,  #we set it to our contingency table
+  beside = T,   #indicating bars to be grouped beside, alongside one another
+  main ="count of cars by cylinders and engine type",
+  xlab ="cylinders", 
+  ylab = "count of cars", 
+  legend =  c("yes","no"),
+  args.legend = list(x = "topleft", title = "V-Engine")
+)
+```
+from the graph we can see that cars with 8 cylinders  use V-engine, while almost most of the cars with 4 cylinders use  straight-shape engine 
+
+
+#Quantitative bivariate analysis--
+#two numeric variables--
+#----------------------------------------------
+
+#create a scatter plot
+```{r}
+plot(
+  x = cars$wt, 
+  y = cars$mpg,
+  main = "weight vs miles per gallon", 
+  xlab = "weight ib/1000",
+  ylab = "miles per gallon"
+)
+
+```
+
+#create a linear regression model 
+
+```{r}
+model <- lm(cars$mpg ~ cars$wt) #mpg as a function of weight of the cars
+```
+
+#create a scatter plot
+```{r}
+plot(
+  x = cars$wt, 
+  y = cars$mpg,
+  main = "weight vs miles per gallon", 
+  xlab = "weight ib/1000",
+  ylab = "miles per gallon"
+)
+
+lines (
+  x = cars$wt,
+  y = model$fitted.values, #use linear reg algorithm for best fit
+  col = "red", 
+  lwd = 3 #line width to be more visible
+)
+```
+from the graph we can expect that the relationship between weight and miles per gallon is inversly proportional.
+
+#----------------------------------------------------------------------------------
+
+
+#Quantitative and qualitative bivariate analysis--
+#numeric variable vs. categorical vaiable--
+#----------------------------------------------
+
+#create a bivariate bar graph 
+```{r}
+avrg <- tapply(cars$hp, cars$cyl, mean) #creating an array containing the average 
+avrg
+```
+
+```{r}
+barplot(
+  height = avrg,
+  main = "average of horsepower by cylinder",
+  xlab = "cylinder",
+  ylab = " horsepower"
+)
+```
+from the graph we can see that if we want more hp then we have to go with 8 clyinders cars.  
+
+
+##What if I want to find a relationship between consuming gasoline per miles and the number of Cylinders
+in this case so it is a bivariate relationship between a num data(mpg) and a categorical data (cyl) so we will use a box plot 
+```{r}
+plot(x = as.factor(cars$cyl), # x-axis represents the no of cylinders
+     y = cars$mpg, # picking miles per gallon variable from the cars dataframe and put it in y-axis
+     xlab = "Number of Cylinders", #labelling x axis
+     ylab = "Miles per Gallon",#labelling y axis
+     col = "blue",
+     main = "Cylinders vs. MPG")   #the header or title of the graph
+
+```
+so, from the graph we can see that the more cylinders the car has, the more the consuming of gasoline is.
